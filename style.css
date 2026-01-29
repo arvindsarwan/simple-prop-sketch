@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background: #0d0d12;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: 'Playfair Display', serif;
+}
+
+.container {
+  text-align: center;
+}
+
+.sketch-area {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: auto;
+}
+
+.pencil {
+  position: absolute;
+  font-size: 24px;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.sketch path {
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+}
+
+.message {
+  margin-top: 20px;
+  opacity: 0;
+}
+
+.quote {
+  font-size: 1.1rem;
+}
+
+.name {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2rem;
+  color: #ffb6c1;
+}
