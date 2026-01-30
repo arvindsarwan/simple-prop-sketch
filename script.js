@@ -1,29 +1,23 @@
-// -----------------------------
-// Configuration
-// -----------------------------
+// -------- CONFIG --------
 const PERSON_NAME = "Aisha";
-const quoteText = "You are so beautiful that I can’t draw you even with my hand,\nthen how would a computer be able to draw you?";
+const QUOTE =
+  "You are so beautiful that I can’t draw you even with my hand,\nthen how would a computer be able to draw you?";
 
-// -----------------------------
-// DOM Elements
-// -----------------------------
+// -------- ELEMENTS --------
 const paths = document.querySelectorAll(".sketch path");
 const pencil = document.querySelector(".pencil");
 const message = document.querySelector(".message");
-const nameEl = document.querySelector(".name");
 const quoteEl = document.querySelector(".quote");
+const nameEl = document.querySelector(".name");
 
-// Set the name dynamically
 nameEl.textContent = PERSON_NAME;
 
-// -----------------------------
-// Typewriter Function
-// -----------------------------
-function typeWriter(text, element, speed = 40) {
+// -------- TYPEWRITER --------
+function typeWriter(text, el, speed = 35) {
   let i = 0;
   function type() {
     if (i < text.length) {
-      element.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+      el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
       i++;
       setTimeout(type, speed);
     }
@@ -31,49 +25,52 @@ function typeWriter(text, element, speed = 40) {
   type();
 }
 
-// -----------------------------
-// GSAP Animation
-// -----------------------------
+// -------- GSAP --------
 gsap.registerPlugin(MotionPathPlugin);
 
-const tl = gsap.timeline();
+const tl = gsap.timeline({ defaults: { ease: "none" } });
 
 // Show pencil
 tl.to(pencil, { opacity: 1, duration: 0.3 });
 
-// Draw first two paths (stop midway intentionally)
-paths.forEach((path, i) => {
-  if (i > 1) return; // stop halfway
+// Draw paths in order
+paths.forEach((path) => {
+  const length = path.getTotalLength();
 
-  // Draw the path
-  tl.to(path, {
-    strokeDashoffset: 0,
-    duration: 1,
-    ease: "power1.inOut"
-  }, "+=0.2");
+  gsap.set(path, {
+    strokeDasharray: length,
+    strokeDashoffset: length
+  });
 
-  // Move pencil along path
+  const duration = length / 120;
+
+  tl.to(path, { strokeDashoffset: 0, duration });
   tl.to(pencil, {
     motionPath: {
-      path: path,
+      path,
       align: path,
       autoRotate: true,
       alignOrigin: [0.5, 0.5]
     },
-    duration: 1,
-    ease: "power1.inOut"
-  }, "<"); // "<" = sync with path animation
+    duration
+  }, "<");
 });
 
-// Pause for dramatic effect
-tl.to({}, { duration: 0.6 });
-
-// Reveal message container
-tl.to(message, {
-  opacity: 1,
-  duration: 1.5,
+// Pencil gives up
+tl.to(pencil, {
+  rotation: 20,
+  y: "+=15",
+  opacity: 0,
+  duration: 0.6,
   ease: "power2.out"
 });
 
-// Start typewriter effect after sketch + pause
-tl.call(() => typeWriter(quoteText, quoteEl), null, "-=1.2");
+// Glow intensifies
+tl.to(".sketch", {
+  filter: "drop-shadow(0 0 16px rgba(255,182,193,0.6))",
+  duration: 1
+});
+
+// Show text
+tl.to(message, { opacity: 1, duration: 1.2 });
+tl.call(() => typeWriter(QUOTE, quoteEl), null, "-=0.8");
